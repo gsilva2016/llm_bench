@@ -32,6 +32,7 @@ NUM_RUNS = 3
 total_t = 0
 total_runs_t = 0
 num_questions = 0
+total_inferences = 0
 
 config.max_new_tokens = MAX_NEW_TOKENS
 config.temperature = 0.2
@@ -41,7 +42,7 @@ config.temperature = 0.2
 
 with open(bench_results_file, "w") as file:
     file.write("sep=|\n")
-    file.write(f"Question #| Run #| Latency(sec)| Output| {NUM_RUNS} Runs Avg. Latency(sec)| All Runs Avg. Latency(sec)\n")
+    file.write(f"Question #| Run #| Latency(msec)| Output| {NUM_RUNS} Runs Avg. Latency(msec)| All Runs Avg. Latency(msec)\n")
 
     for q in all_q:
 
@@ -49,12 +50,13 @@ with open(bench_results_file, "w") as file:
         num_questions = num_questions + 1
 
         for i in range(NUM_RUNS):
+            total_inferences = total_inferences + 1
             start = time.time()
             result = pipe.generate(q['question'], config, max_new_tokens=MAX_NEW_TOKENS)
             end = time.time()
             latency = (end-start) * 1000
-            total_runs_t = total_runs_t + (end-start)  
-            total_t = total_t + (end-start)
+            total_runs_t = total_runs_t + (end-start)
+            total_t = total_t + latency
 
             file.write(f"{num_questions}| {i+1}| {latency}| \"{result.replace('\n', '')}\"|")
             if i < NUM_RUNS-1:
@@ -72,10 +74,9 @@ with open(bench_results_file, "w") as file:
             file.write(f"{n_runs_avg_latency}| N/A\n")
         else:
             file.write(f"{n_runs_avg_latency}| ")
-        #print("Average Latency (question): ", total_runs_t / NUM_RUNS)
+        print("Running Average Latency (msec): " , total_t / total_inferences)
 
-    all_runs_avg_latency = total_t / num_questions
-    # BUG with all runs avg latency below. Compute this manually for now with Excel...
+    all_runs_avg_latency = total_t / total_inferences
     file.write(f"{all_runs_avg_latency}\n")
     print(f"All runs avg. latency: {all_runs_avg_latency}(ms)")
     #print(f"Average Latency (all {total_runs_t}  questions): ", total_t / num_questions)
