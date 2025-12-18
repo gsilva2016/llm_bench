@@ -51,6 +51,7 @@ with open(bench_results_file, "w") as file:
     file.write("sep=|\n")
     file.write(f"Question #| Run #| Latency(msec)| Output| TTFT Avg Latency(msec)| TPOT Avg Latency(msec)| Throughput Avg. TPS| {NUM_RUNS} Runs Avg. Latency(msec)| All Runs Avg. Latency(msec)\n")
 
+    perf_metrics = None
     for q in all_q:
 
         total_runs_t = 0
@@ -62,6 +63,10 @@ with open(bench_results_file, "w") as file:
             total_inferences = total_inferences + 1
             start = time.time()
             result = pipe.generate([ q['question'] ], config, max_new_tokens=MAX_NEW_TOKENS)
+            if perf_metrics is None:
+                perf_metrics = result.perf_metrics
+            else:
+                perf_metrics = perf_metrics + result.perf_metrics
             
             end = time.time()
             latency = (end-start) * 1000
@@ -73,7 +78,7 @@ with open(bench_results_file, "w") as file:
                 file.write("N/A|N/A\n")
             
             #print(f"Question #{num_questions} Run #{i+1} latency: {latency}(ms), output: {result}")
-            print(f"Question #{num_questions} Run #{i+1} latency: {latency}(ms) , ttft avg. latency {result.perf_metrics.get_ttft().mean}(ms), tpot avg. latency {result.perf_metrics.get_tpot().mean}(ms)")
+            print(f"Question #{num_questions} Run #{i+1} latency: {latency}(ms) , ttft avg. latency {result.perf_metrics.get_ttft().mean}(ms) running ttft {perf_metrics.get_ttft().mean}, tpot avg. latency {result.perf_metrics.get_tpot().mean}(ms) running tpot {perf_metrics.get_tpot().mean}")
 
         n_runs_avg_latency = (total_runs_t / NUM_RUNS) * 1000
         print(f"{NUM_RUNS} runs avg. latency: {n_runs_avg_latency}(ms)")
