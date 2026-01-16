@@ -90,7 +90,7 @@ with open(bench_results_file, "w") as file:
         print("Running Average Latency (msec): " , total_t / total_inferences)
     
     if enable_kvcache:
-        pipe.stop_chat()
+        pipe.finish_chat()
     all_runs_avg_latency = total_t / total_inferences
     file.write(f"{all_runs_avg_latency}\n")
     print(f"All runs avg. latency: {all_runs_avg_latency}(ms)")
