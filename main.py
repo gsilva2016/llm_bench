@@ -56,6 +56,8 @@ with open(bench_results_file, "w") as file:
 
         total_runs_t = 0
         num_questions = num_questions + 1
+        quotes = '"'
+        newline = '\n'
 
         if enable_kvcache:
             pipe.start_chat()
@@ -72,8 +74,8 @@ with open(bench_results_file, "w") as file:
             latency = (end-start) * 1000
             total_runs_t = total_runs_t + (end-start)
             total_t = total_t + latency
-
-            file.write(f"{num_questions}| {i+1}| {latency}| \"{result.texts[0].replace('\n', '')}\"| {result.perf_metrics.get_ttft().mean}| {result.perf_metrics.get_tpot().mean}| {result.perf_metrics.get_throughput().mean}|")
+            
+            file.write(f"{num_questions}| {i+1}| {latency}| {quotes}{result.texts[0].replace('{newline}', '')}{quotes}| {result.perf_metrics.get_ttft().mean}| {result.perf_metrics.get_tpot().mean}| {result.perf_metrics.get_throughput().mean}|")
             if i < NUM_RUNS-1:
                 file.write("N/A|N/A\n")
             
