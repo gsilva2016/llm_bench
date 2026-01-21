@@ -4,11 +4,14 @@ Benchmark LLMs using OpenVINO GenAI
 ## Install needed software
 ```
 sudo apt install python3-venv
-python3 -m venv genai
-source genai/bin/activate
+#python3 -m venv genai
+#source genai/bin/activate
+conda create --name genai python=3.11 -y
+conda activate genai
+python -m pip install --upgrade-strategy eager "optimum-intel[openvino]==1.27.0"
+pip install optimum-intel==1.27.0
+#pip install nncf
 pip install openvino-genai
-pip install optimum-intel
-pip install nncf
 ```
 
 ## Authenticate with HF for downloading models
