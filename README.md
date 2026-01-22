@@ -9,7 +9,7 @@ sudo apt install python3-venv
 conda create --name genai python=3.11 -y
 conda activate genai
 python -m pip install --upgrade-strategy eager "optimum-intel[openvino]==1.27.0"
-pip install optimum-intel==1.27.0
+#pip install optimum-intel==1.27.0
 #pip install nncf
 pip install openvino-genai
 ```
